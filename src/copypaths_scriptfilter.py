@@ -13,23 +13,24 @@ from CopyAllPaths import CopyAllPaths
 from AlFeedback import Feedback
 from urllib import unquote
 
-def main(q=False):
+def main(q=None):
 
-  paths = ((subprocess.check_output(['osascript', 'allpaths.applescript'])).strip()) # returns file urls string
+  paths = ((subprocess.check_output(['osascript', 'allpaths.applescript'])).decode().strip()) # returns file urls string
   f_icon_name = "copypaths"
+  is_brief = False
 
   if paths != "":
     p = CopyAllPaths(paths) #--> file ulrs array
     f_title = "Copy POSIX Paths as:"
     posixPaths = ((subprocess.check_output(['osascript', 'fileurl_to_posix.applescript', paths])).strip())
-    
+
 
     if q:
-      
+
       if "-url" in q:
           f_title = "Copy File URLs as:"
           f_icon_name += "_url"
-          
+
       elif "-hfs" in q:
           f_title = "Copy HFS Paths as:"
           f_icon_name += "_hfs"
@@ -44,15 +45,17 @@ def main(q=False):
           if "-s" in q:
               paths = unquote(p.shortPaths()).decode('utf-8')
               f_icon_name += "_short"
-      
+
       if "-q" in q:
           f_icon_name += "_quoted"
           paths = p.quotedPaths(paths)
-      
-      
+
       if "-n" in q:
           paths = p.joinNewlines(paths)
-        
+
+      if "-b" in q:
+          is_brief = True
+
     else:
       f_icon_name += "_posix"
       paths = unquote(posixPaths).decode('utf-8')
@@ -67,9 +70,12 @@ def main(q=False):
     f_valid = "no"
   f_icon = f_icon_name + ".png"
 
-  feedback = Feedback()
-  feedback.addItem(title=f_title, subtitle=f_sub, valid=f_valid, arg=paths, icon=f_icon)
-  print feedback
+  if is_brief:
+      print(paths.encode('utf-8'))
+  else:
+      feedback = Feedback()
+      feedback.addItem(title=f_title, subtitle=f_sub, valid=f_valid, arg=paths, icon=f_icon)
+      print(feedback)
 
 if  __name__ =="__main__":
   main(sys.argv[1:])

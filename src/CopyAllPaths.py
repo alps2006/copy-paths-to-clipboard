@@ -68,7 +68,7 @@ class CopyAllPaths:
         return sp
 
 
-    def quotedPaths(self, p=False, t=False):
+    def quotedPaths(self, p=None, t=None):
         if p:
             pl = self.listPaths(p)
         else:
@@ -85,7 +85,7 @@ class CopyAllPaths:
         return qp
 
 
-    def joinNewlines(self, p=False):
+    def joinNewlines(self, p=None):
         if p:
             pl = self.listPaths(p)
         else:
